@@ -5,72 +5,71 @@ Created on Fri Sep 13 17:19:25 2024
 
 @author: julio
 """
+# Este é o cabeçalho do script que define o interpretador Python e a codificação de caracteres como UTF-8.
+# O bloco de comentário informa a data de criação e o autor do código.
 
-# Importa a biblioteca numpy, que fornece suporte para arrays e operações matemáticas eficientes
 import numpy as np
+# Importa a biblioteca NumPy, usada para operações com arrays e cálculos matemáticos.
 
-# Entradas da rede neural, onde cada sublista representa uma combinação de entrada
-# São os possíveis valores de entrada do problema AND (com 2 entradas binárias)
-entradas = np.array([[0,0], [0,1], [1,0], [1,1]])
+# Definindo o conjunto de entradas (valores de uma tabela verdade) para uma porta AND.
+entradas = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-# Saídas esperadas, que correspondem às saídas corretas da operação AND para as entradas
-# No problema AND, o resultado só é 1 quando ambas as entradas são 1, caso contrário, é 0
+# Saídas esperadas correspondentes às entradas (comportamento de uma porta AND).
 saidas = np.array([0, 0, 0, 1])
 
-# Inicializamos os pesos com valores 0.0 para cada uma das entradas
-# Como estamos lidando com duas entradas, temos dois pesos
+# Inicializa os pesos com valores zero, um para cada entrada.
 pesos = np.array([0.0, 0.0])
 
-# Definimos a taxa de aprendizagem, que controla o quanto os pesos devem ser ajustados
-# durante o treinamento. Aqui, ela é definida como 0.1
+# Define a taxa de aprendizagem, que controla a magnitude dos ajustes dos pesos.
 taxaAprendizagem = 0.1
 
-# Função de ativação Step Function (Função Degrau)
-# Ela decide se o neurônio deve ser ativado (1) ou não (0)
-# A ativação só ocorre se a soma ponderada das entradas for maior ou igual a 1
+# Função de ativação (Step Function) que determina a saída da rede.
 def stepFunction(soma):
+    # Se a soma das entradas ponderadas for maior ou igual a 1, retorna 1.
     if (soma >= 1):
-        return 1  # Neurônio é ativado
-    return 0  # Neurônio não é ativado
+        return 1
+    # Caso contrário, retorna 0.
+    return 0
 
-# Função que calcula a saída do neurônio para um registro (um conjunto de entradas)
-# Aqui usamos a função dot product (produto escalar) para multiplicar os valores das entradas
-# pelos seus respectivos pesos
+# Função que calcula a saída da rede para um conjunto de entradas.
 def calculaSaida(registro):
-    s = registro.dot(pesos)  # Calcula a soma ponderada das entradas pelos pesos
-    return stepFunction(s)  # Aplica a função degrau à soma ponderada
+    # Calcula o produto escalar entre as entradas (registro) e os pesos.
+    s = registro.dot(pesos)
+    # Aplica a função de ativação na soma calculada.
+    return stepFunction(s)
 
-# Função de treinamento do perceptron
-# A ideia é ajustar os pesos do perceptron até que ele seja capaz de classificar todas
-# as entradas corretamente (erro total = 0)
+# Função que treina o perceptron ajustando os pesos.
 def treinar():
-    # Inicializamos erroTotal com um valor maior que 0 para que o laço inicie
+    # Inicializa o erro total com 1 para garantir que o loop comece.
     erroTotal = 1
-    
-    # Enquanto ainda houver erros (erroTotal for diferente de 0)
+    # Loop até que o erro total seja 0, ou seja, até que o perceptron esteja completamente treinado.
     while (erroTotal != 0):
-        erroTotal = 0  # Zera o erro total no início de cada iteração
-        
-        # Loop que percorre todas as entradas e suas respectivas saídas esperadas
+        erroTotal = 0
+        # Itera sobre cada entrada e a saída correspondente.
         for i in range(len(saidas)):
-            # Calcula a saída do perceptron para a i-ésima entrada
+            # Calcula a saída da rede para a entrada atual.
             saidaCalculada = calculaSaida(np.asarray(entradas[i]))
-            
-            # Calcula o erro: a diferença entre a saída esperada e a saída calculada
+            # Calcula o erro como a diferença absoluta entre a saída esperada e a saída calculada.
             erro = abs(saidas[i] - saidaCalculada)
-            
-            # Acumula o erro total, que será usado para decidir se o treinamento continua
+            # Acumula o erro total para verificar se a rede ainda precisa de ajustes.
             erroTotal += erro
-            
-            # Atualiza os pesos com base no erro e nas entradas
+            # Atualiza os pesos, um para cada entrada, com base no erro.
             for j in range(len(pesos)):
-                # Regra de atualização dos pesos: peso = peso + (taxa de aprendizagem * entrada * erro)
+                # A regra de atualização de pesos: novo peso = peso atual + (taxa de aprendizagem * entrada * erro)
                 pesos[j] = pesos[j] + (taxaAprendizagem * entradas[i][j] * erro)
-                # Exibe o peso atualizado no console
+                # Imprime o valor do peso atualizado.
                 print('Peso atualizado: ' + str(pesos[j]))
-            
-            # Exibe o total de erros ao final de cada iteração
-            print('Total de erros: ' + str(erroTotal))
+            # Imprime o erro total acumulado após a iteração sobre todas as entradas.
+        print('Total de erros: ' + str(erroTotal))
 
-# Inicia o processo de treinamento do perceptron
+# Chama a função de treinamento, que ajusta os pesos da rede.
 treinar()
+
+# Após o treinamento, imprime que a rede neural foi treinada.
+print('Rede neural treinada')
+
+# Testa a rede neural com as 4 entradas possíveis e imprime as saídas calculadas.
+print(calculaSaida(entradas[0]))  # Testa a entrada [0, 0]
+print(calculaSaida(entradas[1]))  # Testa a entrada [0, 1]
+print(calculaSaida(entradas[2]))  # Testa a entrada [1, 0]
+print(calculaSaida(entradas[3]))  # Testa a entrada [1, 1]
